@@ -2,6 +2,7 @@ import { Elysia } from "elysia";
 import cors from "@elysiajs/cors";
 import { connectDB } from "./config/db";
 import authRoutes from "./routes/auth.routes";
+import { customerRoutes } from "./routes/customer.routes";
 
 // Connect to db
 await connectDB();
@@ -17,6 +18,7 @@ const app = new Elysia({ prefix: "/api" }).use(
 export default app
   .get("/", () => "Hello Elysia")
   .use(authRoutes)
+  .use(customerRoutes)
   .listen(3000);
 
 console.log(
