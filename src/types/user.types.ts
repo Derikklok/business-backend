@@ -10,6 +10,17 @@ export interface UserResponseDTO {
   email: string;
 }
 
+export interface LoginDTO {
+  email: string;
+  password: string;
+}
+
+export interface UpdatePasswordDTO {
+  email: string;
+  currentPassword: string;
+  newPassword: string;
+}
+
 export const toUserResponse = (user: any): UserResponseDTO => ({
   _id: user._id.toString(),
   name: user.name,
