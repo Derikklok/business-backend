@@ -8,8 +8,8 @@ import { profileRoutes } from "./routes/profile.routes";
 // Connect to db
 await connectDB();
 
-const app = new Elysia({ prefix: "/api" }).use(
-  cors({
+const app = new Elysia({ prefix: "/api" })
+  .use(cors({
     origin: [
       "https://forklift-client.vercel.app",
       "http://localhost:3000",
@@ -19,8 +19,7 @@ const app = new Elysia({ prefix: "/api" }).use(
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
-  }),
-);
+  }));
 
 export default app
   .get("/", () => "Hello Elysia")
@@ -32,3 +31,5 @@ export default app
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
 );
+
+

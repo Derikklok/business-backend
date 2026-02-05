@@ -1,3 +1,5 @@
+import cloudinary from "../config/cloudinary";
+import streamifier from "streamifier";
 import { BusinessProfile } from "../models/BusinessProfile";
 import {
   BusinessProfileResponseDTO,
@@ -59,6 +61,55 @@ export const updateProfile = async ({ body, set }: any) => {
     return { message: err.message };
   }
 };
+
+export const updateLogo = async ({ body, set }: any) => {
+  try {
+    const file = body.logo;
+
+    if (!file) {
+      set.status = 400;
+      return { message: "Logo file is required" };
+    }
+
+    // Check if it's a File object
+    if (!file.arrayBuffer) {
+      set.status = 400;
+      return { message: "Invalid file format" };
+    }
+
+    // Convert File to Buffer
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // Upload to Cloudinary - each image gets unique ID
+    const uploadResult = await new Promise<any>((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: "business-logos",
+          resource_type: "image",
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+
+      streamifier.createReadStream(buffer).pipe(stream);
+    });
+
+    return {
+      message: "Image upload successful",
+      url: uploadResult.secure_url
+    };
+  } catch (err: any) {
+    // console.error("Upload error:", err);
+    set.status = 500;
+    return { message: err.message };
+  }
+};
+
+
+
 /*
  * Response mapper
  */
