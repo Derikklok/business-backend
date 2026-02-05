@@ -3,6 +3,7 @@ import cors from "@elysiajs/cors";
 import { connectDB } from "./config/db";
 import authRoutes from "./routes/auth.routes";
 import { customerRoutes } from "./routes/customer.routes";
+import { profileRoutes } from "./routes/profile.routes";
 
 // Connect to db
 await connectDB();
@@ -25,6 +26,7 @@ export default app
   .get("/", () => "Hello Elysia")
   .use(authRoutes)
   .use(customerRoutes)
+  .use(profileRoutes)
   .listen(3000);
 
 console.log(
