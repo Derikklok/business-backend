@@ -1,5 +1,8 @@
 import { Document } from "../models/Document";
-import { CreateDocumentRequest, DocumentResponse } from "../types/document.types";
+import {
+  CreateDocumentRequest,
+  DocumentResponse,
+} from "../types/document.types";
 
 export const createDocument = async ({ body, set }: any) => {
   try {
@@ -7,9 +10,19 @@ export const createDocument = async ({ body, set }: any) => {
 
     const doc = await Document.create(dto);
     return mapDocument(doc);
-  } catch (err:any) {
+  } catch (err: any) {
     set.status = 400;
-    return { message : err.message}
+    return { message: err.message };
+  }
+};
+
+export const getDocuments = async ({ set }: any) => {
+  try {
+    const docs = await Document.find().sort({ createdAt: -1 });
+    return docs.map(mapDocument);
+  } catch (err: any) {
+    set.status = 400;
+    return { message: "Can not fecth documents" };
   }
 };
 
