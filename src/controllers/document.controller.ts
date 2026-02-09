@@ -11,8 +11,10 @@ export const createDocument = async ({ body, set }: any) => {
     const dto = body as CreateDocumentRequest;
     // Auto generate document no
     const documentNo = await generateDocumentNo(dto.documentType);
-    const doc = await Document.create({...dto,documentNo});
-    return mapDocument(doc);
+    const doc = await Document.create({ ...dto, customer: dto.customerId, documentNo });
+    // Populate customer before mapping
+    const populatedDoc = await Document.findById(doc._id).populate("customer");
+    return mapDocument(populatedDoc);
   } catch (err: any) {
     set.status = 400;
     return { message: err.message };
@@ -21,16 +23,19 @@ export const createDocument = async ({ body, set }: any) => {
 
 export const getDocuments = async ({ set }: any) => {
   try {
-    const docs = await Document.find().sort({ createdAt: -1 });
+    const docs = await Document.find()
+      .populate("customer")
+      .sort({ createdAt: -1 });
     return docs.map(mapDocument);
   } catch (err: any) {
+    console.error("Fetch documents error:", err);
     set.status = 400;
-    return { message: "Can not fecth documents" };
+    return { message: err.message };
   }
 };
 
 export const getDocumentById = async ({ params, set }: any) => {
-  const doc = await Document.findById(params.id);
+  const doc = await Document.findById(params.id).populate("customer");
   if (!doc) {
     set.status = 404;
     return { message: "Document not found" };
@@ -44,8 +49,10 @@ export const updateDocument = async ({ params, set, body }: any) => {
   try {
     // Explicitly remove documentType from the request body - user can not chnage the doc type
     const { documentType, ...updateFields } = body;
-    
-    const doc = await Document.findByIdAndUpdate(params.id, updateFields, { new: true });
+
+    const doc = await Document.findByIdAndUpdate(params.id, updateFields, {
+      new: true,
+    }).populate("customer");
 
     if (!doc) {
       set.status = 404;
@@ -71,12 +78,29 @@ export const deleteDocument = async ({ params, set }: any) => {
   return { message: "Document deleted" };
 };
 
+export const getDocumentsByCustomer = async ({ params, set }: any) => {
+  try {
+    const docs = await Document.find({
+      customer: params.customerId,
+    })
+      .populate("customer")
+      .sort({ createdAt: -1 });
+
+    return docs.map(mapDocument);
+  } catch (err: any) {
+    set.status = 400;
+    return { message: "Cannot fetch customer documents" };
+  }
+};
+
+
 /**
  * Mapper
  */
 const mapDocument = (doc: any): DocumentResponse => ({
   id: doc._id.toString(),
-
+  customerId: doc.customer ? (doc.customer._id || doc.customer).toString() : "",
+  customerName: doc.customer?.companyName || "",
   documentType: doc.documentType,
   documentNo: doc.documentNo,
 

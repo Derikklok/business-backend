@@ -12,7 +12,7 @@ const transactionSchema = new mongoose.Schema(
       type: Date,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const signatureSchema = new mongoose.Schema(
@@ -27,11 +27,16 @@ const signatureSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const documentSchema = new mongoose.Schema(
   {
+    customer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+      required: true,
+    },
     documentType: {
       type: String,
       enum: ["invoice", "estimate", "purchase_order", "rental_proposal"],
@@ -85,7 +90,7 @@ const documentSchema = new mongoose.Schema(
   },
   {
     timestamps: true, // createdAt / updatedAt
-  }
+  },
 );
 
 export const Document = mongoose.model("Document", documentSchema);

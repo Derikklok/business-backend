@@ -19,6 +19,7 @@ export interface SignatureInfo {
 }
 
 export interface CreateDocumentRequest {
+  customerId: string;
   documentType: DocumentType;
   mentionedDate: string;
   documentTitle: string;
@@ -41,6 +42,8 @@ export interface UpdateDocumentRequest {
 
 export interface DocumentResponse {
   id: string;
+  customerId: string;
+  customerName: string;
   documentType: DocumentType;
   documentNo: string;
   mentionedDate: string;
