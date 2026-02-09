@@ -4,12 +4,14 @@ import {
   DocumentResponse,
   UpdateDocumentRequest,
 } from "../types/document.types";
+import { generateDocumentNo } from "../utils/documentNoGenerator";
 
 export const createDocument = async ({ body, set }: any) => {
   try {
     const dto = body as CreateDocumentRequest;
-
-    const doc = await Document.create(dto);
+    // Auto generate document no
+    const documentNo = await generateDocumentNo(dto.documentType);
+    const doc = await Document.create({...dto,documentNo});
     return mapDocument(doc);
   } catch (err: any) {
     set.status = 400;
@@ -40,8 +42,10 @@ export const getDocumentById = async ({ params, set }: any) => {
 // Update Document
 export const updateDocument = async ({ params, set, body }: any) => {
   try {
-    const dto = body as UpdateDocumentRequest;
-    const doc = await Document.findByIdAndUpdate(params.id, dto, { new: true });
+    // Explicitly remove documentType from the request body - user can not chnage the doc type
+    const { documentType, ...updateFields } = body;
+    
+    const doc = await Document.findByIdAndUpdate(params.id, updateFields, { new: true });
 
     if (!doc) {
       set.status = 404;

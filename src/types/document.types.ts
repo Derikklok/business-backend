@@ -20,7 +20,6 @@ export interface SignatureInfo {
 
 export interface CreateDocumentRequest {
   documentType: DocumentType;
-  documentNo: string;
   mentionedDate: string;
   documentTitle: string;
   specialNotes?: string;
