@@ -5,6 +5,7 @@ import authRoutes from "./routes/auth.routes";
 import { customerRoutes } from "./routes/customer.routes";
 import { profileRoutes } from "./routes/profile.routes";
 import { documentRoutes } from "./routes/document.routes";
+import { inventoryRoutes } from "./routes/inventory.routes";
 
 // Connect to db
 await connectDB();
@@ -29,6 +30,7 @@ export default app
   .use(customerRoutes)
   .use(profileRoutes)
   .use(documentRoutes)
+  .use(inventoryRoutes)
   .listen(3000);
 
 console.log(
